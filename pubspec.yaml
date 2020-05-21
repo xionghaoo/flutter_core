@@ -2,7 +2,7 @@ name: core
 description: core package
 version: 0.0.1
 author:
-homepage:
+homepage: xx
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -15,6 +15,10 @@ dependencies:
   pull_to_refresh: ^1.5.7
   # 本地文件夹目录
   path_provider: ^1.6.0
+  # 日志
+  logger: ^0.8.3
+  # 网络请求
+  dio: ^3.0.9
 
 dev_dependencies:
   flutter_test:
