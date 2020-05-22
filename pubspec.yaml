@@ -1,8 +1,8 @@
 name: core
 description: core package
-version: 0.0.1
-author:
-homepage: xx
+version: 0.0.2
+author: xionghao
+homepage: https://github.com/xionghaoo/flutter_core
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
