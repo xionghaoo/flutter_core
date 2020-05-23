@@ -21,7 +21,7 @@ class ApiResponse<T> {
 
   final Response _response;
 
-  ApiResponse(this._response, Function(dynamic) jsonConverter) {
+  ApiResponse(this._response, Function(Map<String, dynamic> json) jsonConverter) {
     code = _response.statusCode;
     switch (code) {
       case 200:
