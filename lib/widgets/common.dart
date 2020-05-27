@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -160,6 +161,47 @@ Widget pullToRefreshWidget({
     controller: controller,
     onRefresh: refresh,
     header: WaterDropHeader(),
+    child: child,
+  );
+}
+
+Widget pagingRefreshWidget({
+  @required RefreshController controller,
+  @required Function onRefresh,
+  @required Function onLoading,
+  @required Widget child,
+}) {
+  return SmartRefresher(
+    enablePullDown: true,
+    enablePullUp: true,
+    controller: controller,
+    onRefresh: onRefresh,
+    header: WaterDropHeader(),
+    footer: CustomFooter(
+      builder: (BuildContext context,LoadStatus mode){
+        Widget body ;
+        if(mode == LoadStatus.idle){
+          body =  Text("上拉加载更多");
+        }
+        else if(mode == LoadStatus.loading){
+          body =  CupertinoActivityIndicator();
+        }
+        else if(mode == LoadStatus.failed){
+          body = Text("加载失败");
+        }
+        else if(mode == LoadStatus.canLoading){
+          body = Text("放开刷新");
+        }
+        else{
+          body = Text("没有更多数据了~");
+        }
+        return Container(
+          height: 55.0,
+          child: Center(child:body),
+        );
+      },
+    ),
+    onLoading: onLoading,
     child: child,
   );
 }

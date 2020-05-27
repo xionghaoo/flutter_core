@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 
-final colorPrimary = createMaterialColor(Color(0xFF417EFF));
-
-final colorAccent = createMaterialColor(Color(0xFFFF6262));
-
 final colorDivider = Colors.grey[200];
 
 const colorDividerConst = Color(0xFFEEEEEE);
@@ -11,8 +7,6 @@ const colorDividerConst = Color(0xFFEEEEEE);
 final colorInputHint = createMaterialColor(Color(0xFFA5A5A5));
 
 final colorInputHintConst = Color(0xFFA5A5A5);
-
-final colorMainText = createMaterialColor(Color(0xFF242424));
 
 final colorMainTextConst = Color(0xFF242424);
 
