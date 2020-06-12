@@ -11,12 +11,14 @@ class InkBox extends StatelessWidget {
 
   final BorderRadius borderRadius;
   final Color color;
+  final Gradient gradient;
   final Widget child;
   final Function onTap;
 
   InkBox({
     this.borderRadius,
     this.color,
+    this.gradient,
     @required this.onTap,
     @required this.child,
   });
@@ -32,6 +34,7 @@ class InkBox extends StatelessWidget {
         decoration: BoxDecoration(
           color: color == null ? Colors.white : color,
           borderRadius: borderRadius,
+          gradient: gradient
         ),
         child: InkWell(
           child: child,
@@ -75,38 +78,6 @@ class ConfirmLightButton extends StatelessWidget {
         child: Text(title, style: TextStyle(color: Theme.of(context).primaryColor, fontSize: xdp(15), fontWeight: FontWeight.bold)),
       ),
       onTap: onTap,
-    );
-  }
-}
-
-class ConfirmButton extends StatelessWidget {
-
-  final String title;
-  final double height;
-  final double width;
-  final Function onTap;
-  final bool disable;
-
-  ConfirmButton({
-    @required this.title,
-    @required this.onTap,
-    this.height = 44,
-    this.width,
-    this.disable = false
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkBox(
-      borderRadius: BorderRadius.circular(xdp(4)),
-      color: disable ? Colors.grey : Theme.of(context).primaryColor,
-      child: Container(
-        width: width,
-        height: height,
-        alignment: Alignment.center,
-        child: Text(title, style: TextStyle(color: Colors.white, fontSize: xdp(17)),),
-      ),
-      onTap: disable ? null : onTap,
     );
   }
 }
@@ -178,21 +149,14 @@ Widget pagingRefreshWidget({
     onRefresh: onRefresh,
     header: WaterDropHeader(),
     footer: CustomFooter(
+      loadStyle: LoadStyle.ShowWhenLoading,
       builder: (BuildContext context,LoadStatus mode){
         Widget body ;
-        if(mode == LoadStatus.idle){
-          body =  Text("上拉加载更多");
-        }
-        else if(mode == LoadStatus.loading){
-          body =  CupertinoActivityIndicator();
-        }
-        else if(mode == LoadStatus.failed){
+        if(mode == LoadStatus.idle || mode == LoadStatus.loading || mode == LoadStatus.canLoading){
+          body = CupertinoActivityIndicator();
+        } else if(mode == LoadStatus.failed) {
           body = Text("加载失败");
-        }
-        else if(mode == LoadStatus.canLoading){
-          body = Text("放开刷新");
-        }
-        else{
+        } else {
           body = Text("没有更多数据了~");
         }
         return Container(
@@ -207,8 +171,8 @@ Widget pagingRefreshWidget({
 }
 
 showToast(String message) {
-  Fluttertoast.showToast(msg: message);
+  Fluttertoast.showToast(msg: message, gravity: ToastGravity.CENTER);
 }
 
-final emptyWidget = Center(child: Text("暂无数据", style: TextStyle(fontSize: xdp(16), color: Colors.grey[500])));
+//final emptyWidget = Center(child: Text("暂无数据", style: TextStyle(fontSize: xdp(16), color: Colors.grey[500])));
 
