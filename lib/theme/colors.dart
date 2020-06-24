@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-final colorDivider = Colors.grey[200];
-
-const colorDividerConst = Color(0xFFEEEEEE);
+//final colorDivider = Colors.grey[200];
+//
+//const colorDividerConst = Color(0xFFEEEEEE);
 
 final colorInputHint = createMaterialColor(Color(0xFFA5A5A5));
 

@@ -14,7 +14,7 @@ class Resource<T> {
 
   factory Resource.success(T data) => Resource(NetworkStatus.success, data, null);
 
-  factory Resource.loading() => Resource(NetworkStatus.loading, null, null);
+  factory Resource.loading({T data}) => Resource(NetworkStatus.loading, data, null);
 
   factory Resource.error({String error}) => Resource(NetworkStatus.failure, null, error);
 

@@ -30,6 +30,7 @@ class InkBox extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       borderRadius: borderRadius,
       child: Ink(
+
         // 对InkWell包裹的widget进行装饰，可以添加padding
         decoration: BoxDecoration(
           color: color == null ? Colors.white : color,
@@ -37,6 +38,9 @@ class InkBox extends StatelessWidget {
           gradient: gradient
         ),
         child: InkWell(
+//          focusColor: Colors.grey,
+//          splashColor: Colors.black12,
+//          highlightColor: Colors.black38,
           child: child,
           onTap: onTap,
         ),
@@ -119,7 +123,7 @@ class CancelButton extends StatelessWidget {
   }
 }
 
-const dividerWidget = const Divider(height: 0.5, thickness: 0.5, color: colorDividerConst,);
+//const dividerWidget = const Divider(height: 0.5, thickness: 0.5, color: colorDividerConst,);
 
 Widget pullToRefreshWidget({
   @required RefreshController controller,
