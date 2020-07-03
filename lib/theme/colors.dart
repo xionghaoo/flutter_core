@@ -4,19 +4,19 @@ import 'package:flutter/material.dart';
 //
 //const colorDividerConst = Color(0xFFEEEEEE);
 
-final colorInputHint = createMaterialColor(Color(0xFFA5A5A5));
-
-final colorInputHintConst = Color(0xFFA5A5A5);
-
-final colorMainTextConst = Color(0xFF242424);
-
-final colorWeekText = createMaterialColor(Color(0xFF666666));
-
-const colorWeekTextConst = Color(0xFF666666);
-
-final colorSignPanel = createMaterialColor(Color(0xFFF7F7F8));
-
-final colorSignPanelConst = Color(0xFFF7F7F8);
+//final colorInputHint = createMaterialColor(Color(0xFFA5A5A5));
+//
+//final colorInputHintConst = Color(0xFFA5A5A5);
+//
+//final colorMainTextConst = Color(0xFF242424);
+//
+//final colorWeekText = createMaterialColor(Color(0xFF666666));
+//
+//const colorWeekTextConst = Color(0xFF666666);
+//
+//final colorSignPanel = createMaterialColor(Color(0xFFF7F7F8));
+//
+//final colorSignPanelConst = Color(0xFFF7F7F8);
 
 MaterialColor createMaterialColor(Color color) {
   List strengths = <double>[.05];

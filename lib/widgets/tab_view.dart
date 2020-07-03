@@ -75,7 +75,7 @@ class _TabsViewState extends State<XTabView> with SingleTickerProviderStateMixin
           alignment: Alignment.center,
           child: _currentSelectIndex == index
               ? Text(tabName, style: TextStyle(color: Theme.of(context).primaryColor, fontSize: xdp(16), fontWeight: FontWeight.bold),)
-              : Text(tabName, style: TextStyle(color: colorMainTextConst, fontSize: xdp(16)),),
+              : Text(tabName, style: TextStyle(color: Color(0xFF242424), fontSize: xdp(16)),),
         ),
         onTap: () {
           /// 选择tab

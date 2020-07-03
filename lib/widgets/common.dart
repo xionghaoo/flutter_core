@@ -1,3 +1,4 @@
+import 'package:core/network/network.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -49,82 +50,6 @@ class InkBox extends StatelessWidget {
   }
 }
 
-class ConfirmLightButton extends StatelessWidget {
-
-  final String title;
-  final double height;
-  final double width;
-  final Function onTap;
-
-  ConfirmLightButton({
-    @required this.title,
-    @required this.onTap,
-    this.height = 44,
-    this.width
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkBox(
-      borderRadius: BorderRadius.circular(xdp(4)),
-      color: Colors.white,
-      child: Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-            border: Border.all(
-                color: Theme.of(context).primaryColor,
-                width: 0.5
-            ),
-            borderRadius: BorderRadius.circular(xdp(4))
-        ),
-        alignment: Alignment.center,
-        child: Text(title, style: TextStyle(color: Theme.of(context).primaryColor, fontSize: xdp(15), fontWeight: FontWeight.bold)),
-      ),
-      onTap: onTap,
-    );
-  }
-}
-
-class CancelButton extends StatelessWidget {
-
-  final String title;
-  final double height;
-  final double width;
-  final Function onTap;
-
-  CancelButton({
-    @required this.title,
-    @required this.onTap,
-    this.height = 44,
-    this.width
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkBox(
-      borderRadius: BorderRadius.circular(xdp(4)),
-      color: Colors.white,
-      child: Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: colorInputHintConst,
-            width: 0.5
-          ),
-          borderRadius: BorderRadius.circular(xdp(4))
-        ),
-        alignment: Alignment.center,
-        child: Text(title, style: TextStyle(color: colorInputHintConst, fontSize: xdp(17)),),
-      ),
-      onTap: onTap,
-    );
-  }
-}
-
-//const dividerWidget = const Divider(height: 0.5, thickness: 0.5, color: colorDividerConst,);
-
 Widget pullToRefreshWidget({
   @required RefreshController controller,
   @required Function refresh,
@@ -140,37 +65,41 @@ Widget pullToRefreshWidget({
   );
 }
 
-Widget pagingRefreshWidget({
-  @required RefreshController controller,
-  @required Function onRefresh,
-  @required Function onLoading,
-  @required Widget child,
+/// Http网络状态Widget，成功、失败、加载中、数据为空
+Widget networkWidget({
+  @required NetworkStatus status,
+  @required bool isEmpty,
+  @required Widget successWidget,
+  Widget emptyWidget,
+  Widget loadingWidget,
+  Widget errorWidget,
 }) {
-  return SmartRefresher(
-    enablePullDown: true,
-    enablePullUp: true,
-    controller: controller,
-    onRefresh: onRefresh,
-    header: WaterDropHeader(),
-    footer: CustomFooter(
-      loadStyle: LoadStyle.ShowWhenLoading,
-      builder: (BuildContext context,LoadStatus mode){
-        Widget body ;
-        if(mode == LoadStatus.idle || mode == LoadStatus.loading || mode == LoadStatus.canLoading){
-          body = CupertinoActivityIndicator();
-        } else if(mode == LoadStatus.failed) {
-          body = Text("加载失败");
-        } else {
-          body = Text("没有更多数据了~");
-        }
-        return Container(
-          height: 55.0,
-          child: Center(child:body),
-        );
-      },
-    ),
-    onLoading: onLoading,
-    child: child,
+  switch (status) {
+    case NetworkStatus.success:
+      return isEmpty ? (emptyWidget ?? defaultEmptyWidget()) : successWidget;
+    case NetworkStatus.failure:
+      return errorWidget ?? defaultErrorWidget();
+    case NetworkStatus.loading:
+      return loadingWidget ?? defaultLoadingWidget();
+  }
+  return SizedBox();
+}
+
+Widget defaultLoadingWidget() {
+  return Center(
+      child: CircularProgressIndicator()
+  );
+}
+
+Widget defaultEmptyWidget() {
+  return Center(
+    child: Text("暂无数据", style: TextStyle(fontSize: xdp(14), color: Color(0xFF989797)),),
+  );
+}
+
+Widget defaultErrorWidget() {
+  return Center(
+    child: Text("加载失败", style: TextStyle(fontSize: xdp(14), color: Color(0xFF989797))),
   );
 }
 
