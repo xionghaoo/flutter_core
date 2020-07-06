@@ -1,4 +1,3 @@
-import 'package:core/screen_adaptation.dart';
 import 'package:flutter/material.dart';
 
 typedef Widget PagingItemWidgetBuilder();
@@ -139,7 +138,7 @@ Widget defaultCompletedWidget() {
       height: 40,
       child: Padding(
         padding: const EdgeInsets.all(8),
-        child: Text("我是有底线的 ~", style: TextStyle(fontSize: xdp(12), color: Color(0xFFF9F8F8)),),
+        child: Text("我是有底线的 ~", style: TextStyle(fontSize: 13, color: Color(0xFF999999)),),
       ),
     ),
   );
