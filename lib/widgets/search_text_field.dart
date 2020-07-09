@@ -17,24 +17,32 @@ class SearchTextField extends StatefulWidget {
   final TextStyle hintStyle;
   final Function(String) onSearch;
   final AdaptSizeCallback adaptSize;
+  final FocusNode focusNode;
+  final TextEditingController controller;
 
   SearchTextField({
     this.hintText,
     this.hintStyle,
     this.onSearch,
-    this.adaptSize = _defaultCallback
+    this.adaptSize = _defaultCallback,
+    this.focusNode,
+    this.controller
   });
 
   @override
-  _SearchTextFieldState createState() => _SearchTextFieldState(adaptSize);
+  _SearchTextFieldState createState() => _SearchTextFieldState(adaptSize, controller);
 }
 
 class _SearchTextFieldState extends State<SearchTextField> {
 
   final AdaptSizeCallback _xdp;
-  _SearchTextFieldState(this._xdp);
+  _SearchTextFieldState(this._xdp, this._searchController) {
+    if (_searchController == null) {
+      _searchController = TextEditingController();
+    }
+  }
 
-  final _searchController = TextEditingController();
+  TextEditingController _searchController;
   final _showClearIcon = ValueNotifier(false);
   Timer _searchTimer;
 
@@ -92,6 +100,7 @@ class _SearchTextFieldState extends State<SearchTextField> {
               child: TextField(
                 maxLines: 1,
                 controller: _searchController,
+                focusNode: widget.focusNode,
                 decoration: InputDecoration(
                   hintText: widget.hintText,
                   hintStyle: widget.hintStyle ?? TextStyle(fontSize: xdp(14), color: _colorSearchText),
