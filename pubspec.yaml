@@ -19,6 +19,7 @@ dependencies:
   logger: ^0.8.3
   # 网络请求
   dio: ^3.0.9
+  crypto: ^2.1.5
 
 dev_dependencies:
   flutter_test:

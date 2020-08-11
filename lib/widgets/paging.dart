@@ -82,7 +82,7 @@ abstract class PagingModel<T> extends ChangeNotifier {
   /// 分页计数
   int nextPage = 1;
   /// 缓存请求参数，方便加载下一页时使用
-  Map<String, dynamic> currentArguments;
+  Map<String, dynamic> currentArguments = {};
 
   /// 分页数据加载方法
   /// arguments 可传递实际http请求的参数
