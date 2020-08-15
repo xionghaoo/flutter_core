@@ -5,8 +5,9 @@ import '../screen_adaptation.dart';
 
 class ProgressDialog {
   BuildContext context;
+  String message;
 
-  ProgressDialog(this.context);
+  ProgressDialog(this.context, {this.message = "加载中..."});
 
   show() {
     showDialog<void>(
@@ -40,7 +41,7 @@ class ProgressDialog {
                       strokeWidth: 2,
                     ),
                     SizedBox(height: xdp(8),),
-                    Text("加载中...", style: TextStyle(color: Colors.grey, fontSize: xdp(12)),),
+                    Text(message, style: TextStyle(color: Colors.grey, fontSize: xdp(12)),),
                   ],
                 ),
               ),
