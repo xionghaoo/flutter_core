@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
 
-typedef Widget PagingItemWidgetBuilder();
-typedef void SuccessCallback(bool isEmpty);
-typedef void SuccessListCallback<T>(List<T> data);
-typedef void FailureCallback();
-
 /// 分页框架
 ///
 /// 和Provider配合使用，使用方法：
@@ -95,7 +90,12 @@ typedef void FailureCallback();
 ///   // 发起分页请求
 ///   model.loadPagingData(isRefresh: true, arguments: args);
 /// ```
-///
+
+typedef Widget PagingItemWidgetBuilder();
+typedef void SuccessCallback(bool isEmpty);
+typedef void SuccessListCallback<T>(List<T> data);
+typedef void FailureCallback();
+
 /// 分页State，配合PagingModel一起使用
 /// 子类需要调用的两个方法
 /// pagingRefresh
