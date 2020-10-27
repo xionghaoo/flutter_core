@@ -5,9 +5,98 @@ typedef void SuccessCallback(bool isEmpty);
 typedef void SuccessListCallback<T>(List<T> data);
 typedef void FailureCallback();
 
-/// 分页辅助工具
-/// 1、分页State，配合PagingModel一起使用
+/// 分页框架
 ///
+/// 和Provider配合使用，使用方法：
+/// ```
+/// 1、继承PagingState
+/// class _MyPageState extends PagingState<IncomeSubPage> {
+///
+///   @override
+///   PagingModel pagingModel() => IncomeModel.instance(context);
+///
+///   ...
+///
+///   @override
+///   Widget build(BuildContext context) {
+///     return ListView.builder(
+///       padding: EdgeInsets.zero,
+///       // itemCount: , 分页列表itemCount不填，必须为null
+///       itemBuilder: (context, index) => pagingItemWidget(
+///         index: index,
+///         listLength: res.data.length,
+///         itemBuilder: () => _itemWidget()
+///       ),
+///     );
+///   }
+/// }
+///
+/// 2、继承PagingModel
+/// class MyPageModel extends PagingModel<ItemData> {
+///
+///   ...
+///
+///   @override
+///   afterListData(List<IncomeItem> items) {
+///     // a.第二页以后的页面加载完成时回调
+///     resource.data.addAll(items);
+///   }
+///
+///   @override
+///   initialListData(List<IncomeItem> items) {
+///     // b.第一页数据加载完成时回调
+///     resource = Resource.success(items);
+///   }
+///
+///   @override
+///   pagingRequest(int page, Map<String, dynamic> arguments, SuccessListCallback success, FailureCallback failure) {
+///     // c.分页接口请求
+///     // 接口请求参数从arguments对象获取，页数使用page变量，page会自动增加，
+///     String beginDate = arguments['beginDate'];
+///     String endDate = arguments['endDate'];
+///     final subTab = IncomeParentModel.instance(_repo.context).currentSelectedSubTab;
+///     _repo.responseWrapper<IncomeResult>(
+///         future: _repo.storeIncomeList(
+///             beginDate: beginDate,
+///             endDate: endDate,
+///             orderType: subTab == 0 ? AthenaUtil.ORDER_TYPE_OPERATION : AthenaUtil.ORDER_TYPE_STORE,
+///             page: page
+///         ),
+///         success: (r) {
+///           totalData = _TotalData(
+///             promote_amount: r.data.promote_amount,
+///             store_amount: r.data.store_amount,
+///             total_amount: r.data.total_amount
+///           );
+///           // d.接口请求成功，把列表数据传递给paging framework
+///           success(r.data.items);
+///         },
+///         error: () {
+///           resource = Resource.error();
+///           // e.接口请求失败，通知paging framework
+///           failure();
+///         }
+///     );
+///   }
+///
+///   @override
+///   resetData() {
+///     // f.加载数据前重置数据状态
+///     resource = Resource.loading();
+///   }
+/// }
+///
+/// 3. 调用分页请求
+///   final model = Provider.of<MyPageModel>(context, listen: false);
+///   // 分页接口请求参数使用currentArguments变量传递
+///   final args = model.currentArguments;
+///   args['beginDate'] = _selectedStartDateValue.value;
+///   args['endDate'] = _selectedEndDateValue.value;
+///   // 发起分页请求
+///   model.loadPagingData(isRefresh: true, arguments: args);
+/// ```
+///
+/// 分页State，配合PagingModel一起使用
 /// 子类需要调用的两个方法
 /// pagingRefresh
 /// pagingItemWidget
@@ -77,7 +166,7 @@ abstract class PagingState<W extends StatefulWidget> extends State<W> {
   
 }
 
-/// 2、分页Model，配合PagingState一起使用
+/// 分页Model，配合PagingState一起使用
 abstract class PagingModel<T> extends ChangeNotifier {
   /// 分页计数
   int nextPage = 1;
