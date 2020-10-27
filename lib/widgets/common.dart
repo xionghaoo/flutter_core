@@ -8,6 +8,18 @@ import '../screen_adaptation.dart';
 import '../theme/colors.dart';
 
 /// 水波纹效果
+/// 使用：
+/// ```
+/// InkBox(
+///   color: Colors.white,
+///   child: Container(
+///   height: xdp(44),
+///   // decoration不要设置颜色，用InkBox的颜色
+///   decoration: ...
+///   child: ...
+///   onTap: () {},
+/// )
+/// ```
 class InkBox extends StatelessWidget {
 
   final BorderRadius borderRadius;
@@ -65,7 +77,7 @@ Widget pullToRefreshWidget({
   );
 }
 
-/// Http网络状态Widget，成功、失败、加载中、数据为空
+/// Http网络状态Widget，成功、失败、加载中、数据为空，配合network.dart使用
 Widget networkWidget({
   @required NetworkStatus status,
   @required bool isEmpty,
