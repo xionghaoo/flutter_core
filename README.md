@@ -30,6 +30,9 @@ dependencies:
 
 2、networkWidget() 网络布局，方便显示各种网络加载状态
 
+## widgets/paging.dart
+> 分页框架
+
 ## widgets/progress_dialog.dart
 > loading组件
 
