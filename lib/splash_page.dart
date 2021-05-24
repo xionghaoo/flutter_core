@@ -10,9 +10,9 @@ class SplashPage extends StatefulWidget {
 
   static final String path = "/";
   
-  final Widget loginPage;
-  final Widget homePage;
-  final AuthCallback hasAuthInfo;
+  final Widget? loginPage;
+  final Widget? homePage;
+  final AuthCallback? hasAuthInfo;
   
   SplashPage({
     @required this.loginPage,
@@ -26,12 +26,12 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> {
 
-  bool _hasUserInfo;
+  bool? _hasUserInfo;
 
-  Widget _startPage() {
+  Widget? _startPage() {
     return _hasUserInfo == null
         ? Container(color: Colors.white, alignment: Alignment.center,)
-        : _hasUserInfo
+        : _hasUserInfo!
         ? widget.homePage
         : widget.loginPage;
   }
@@ -40,7 +40,7 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
 
-    widget.hasAuthInfo().then((value) {
+    widget.hasAuthInfo!().then((value) {
       setState(() {
         _hasUserInfo = value;
       });
@@ -54,6 +54,6 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    return _startPage();
+    return _startPage()!;
   }
 }
