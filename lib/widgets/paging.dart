@@ -102,7 +102,7 @@ typedef void FailureCallback();
 /// pagingItemWidget
 abstract class PagingState<W extends StatefulWidget> extends State<W> {
   
-  final Function() loadData;
+  final Function()? loadData;
   
   PagingState({
     this.loadData  
@@ -144,16 +144,17 @@ abstract class PagingState<W extends StatefulWidget> extends State<W> {
 
   /// 构建分页列表子项
   pagingItemWidget<T>({
-    @required int index,
-    @required int listLength,
-    @required PagingItemWidgetBuilder itemBuilder,
+    required int? index,
+    required int? listLength,
+    required PagingItemWidgetBuilder? itemBuilder,
     /// loading more status
-    Widget bottomLoadingWidget,
+    Widget? bottomLoadingWidget,
     /// no more status
-    Widget bottomCompletedWidget
+    Widget? bottomCompletedWidget
   }) {
-    if (index < listLength) {
-      return itemBuilder();
+    assert(index != null && listLength != null && itemBuilder != null);
+    if (index! < listLength!) {
+      return itemBuilder!();
     } else if (index == listLength) {
       if (!_isEndOfList) {
         _fetchMore();
@@ -171,18 +172,18 @@ abstract class PagingModel<T> extends ChangeNotifier {
   /// 分页计数
   int nextPage = 1;
   /// 缓存请求参数，方便加载下一页时使用
-  Map<String, dynamic> currentArguments = {};
+  Map<String, dynamic>? currentArguments = {};
 
   /// 分页数据加载方法
   /// arguments 可传递实际http请求的参数
-  loadPagingData({bool isRefresh = true, Map<String, dynamic> arguments, Function(bool) success, Function failure}) {
+  loadPagingData({bool isRefresh = true, Map<String, dynamic>? arguments, Function(bool)? success, Function? failure}) {
     currentArguments = arguments;
     if (isRefresh) {
       nextPage = 1;
 //      resource = Resource.loading();
       resetData();
     }
-    pagingRequest(nextPage, arguments, (data) {
+    pagingRequest<T>(nextPage, arguments, (data) {
       if (isRefresh) {
 //        resource = Resource.success(r.data.items);
         initialListData(data);
@@ -210,7 +211,7 @@ abstract class PagingModel<T> extends ChangeNotifier {
   /// arguments: 请求参数传递工具
   /// success: 请求成功的回调，把请求成功的列表数据装进来
   /// failure：请求失败的回调，可用于处理resource的error状态，如: resource = Resource.error(); failure();
-  pagingRequest(int page, Map<String, dynamic> arguments, SuccessListCallback success, FailureCallback failure);
+  pagingRequest<T>(int page, Map<String, dynamic>? arguments, SuccessListCallback<T> success, FailureCallback failure);
 
   /// 第一次加载的列表数据
   /// 实现例子：resource = Resource.success(r.data.items);

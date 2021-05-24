@@ -22,11 +22,11 @@ import '../theme/colors.dart';
 /// ```
 class InkBox extends StatelessWidget {
 
-  final BorderRadius borderRadius;
-  final Color color;
-  final Gradient gradient;
-  final Widget child;
-  final Function onTap;
+  final BorderRadius? borderRadius;
+  final Color? color;
+  final Gradient? gradient;
+  final Widget? child;
+  final Function()? onTap;
 
   InkBox({
     this.borderRadius,
@@ -63,9 +63,9 @@ class InkBox extends StatelessWidget {
 }
 
 Widget pullToRefreshWidget({
-  @required RefreshController controller,
-  @required Function refresh,
-  @required Widget child,
+  required RefreshController controller,
+  Function()? refresh,
+  @required Widget? child,
 }) {
   return SmartRefresher(
     enablePullDown: true,
@@ -79,12 +79,12 @@ Widget pullToRefreshWidget({
 
 /// Http网络状态Widget，成功、失败、加载中、数据为空，配合network.dart使用
 Widget networkWidget({
-  @required NetworkStatus status,
-  @required bool isEmpty,
-  @required Widget successWidget,
-  Widget emptyWidget,
-  Widget loadingWidget,
-  Widget errorWidget,
+  required NetworkStatus status,
+  bool isEmpty = false,
+  required Widget successWidget,
+  Widget? emptyWidget,
+  Widget? loadingWidget,
+  Widget? errorWidget,
 }) {
   switch (status) {
     case NetworkStatus.success:

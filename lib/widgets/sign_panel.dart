@@ -16,9 +16,9 @@ class SignPanel extends StatefulWidget {
   final double height;
 
   SignPanel({
-    Key key,
-    @required this.controller,
-    @required this.backgroundColor,
+    required Key key,
+    required this.controller,
+    required this.backgroundColor,
     this.height = 200
   }) : super(key: key);
 
@@ -36,7 +36,7 @@ class _SignPanelState extends State<SignPanel> {
 
   GlobalKey _repaintKey = GlobalKey();
 
-  List<Offset> _points = [];
+  List<Offset?> _points = [];
 
   Future<String> _saveSign() async {
     File f = await _createImageFile();
@@ -47,11 +47,11 @@ class _SignPanelState extends State<SignPanel> {
   /// 截图，并且返回图片的保存地址
   Future<String> _capturePng(File toFile) async {
     // 1. 获取 RenderRepaintBoundary
-    RenderRepaintBoundary boundary = _repaintKey.currentContext.findRenderObject();
+    RenderRepaintBoundary boundary = _repaintKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
     // 2. 生成 Image
     ui.Image image = await boundary.toImage(pixelRatio: 3.0);
     // 3. 生成 Uint8List
-    ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    ByteData byteData = (await image.toByteData(format: ui.ImageByteFormat.png))!;
     Uint8List pngBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
     // 4. 本地存储Image
     toFile.writeAsBytes(pngBytes);
@@ -73,7 +73,7 @@ class _SignPanelState extends State<SignPanel> {
   }
 
   _addPoints(DragUpdateDetails details) {
-    RenderBox renderBox = _repaintKey.currentContext.findRenderObject();
+    RenderBox renderBox = _repaintKey.currentContext!.findRenderObject() as RenderBox;
     Offset localPos = renderBox.globalToLocal(details.globalPosition);
     double maxW = renderBox.size.width;
     double maxH = renderBox.size.height;
@@ -136,7 +136,7 @@ class _SignPanelState extends State<SignPanel> {
 
 class _SignPainter extends CustomPainter {
 
-  final List<Offset> points;
+  final List<Offset?> points;
   Paint _paint = Paint()
     ..color = Colors.black
     ..strokeCap = StrokeCap.round
@@ -151,7 +151,7 @@ class _SignPainter extends CustomPainter {
     // 绘制签名
     for (int i = 0; i < points.length - 1; i++) {
       if (points[i] != null && points[i + 1] != null) {
-        canvas.drawLine(points[i], points[i + 1], _paint);
+        canvas.drawLine(points[i]!, points[i + 1]!, _paint);
       }
     }
   }
@@ -163,7 +163,7 @@ class _SignPainter extends CustomPainter {
 }
 
 class SignController {
-  _SignPanelState _state;
+  _SignPanelState? _state;
 
   _setState(_SignPanelState state) {
     _state = state;
@@ -174,13 +174,13 @@ class SignController {
       showToast("签名不能为空");
       return Future.value(null);
     }
-    return _state._saveSign();
+    return _state!._saveSign();
   }
 
-  isEmpty() => _state._points.isEmpty;
+  isEmpty() => _state!._points.isEmpty;
 
   clear() async {
-    _state.clear();
+    _state!.clear();
   }
 
 }

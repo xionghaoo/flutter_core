@@ -60,17 +60,17 @@ double _defaultCallback(double size) => size;
 
 class SearchTextField extends StatefulWidget {
 
-  final String hintText;
-  final TextStyle hintStyle;
+  final String? hintText;
+  final TextStyle? hintStyle;
   final Function(String) onSearch;
   final AdaptSizeCallback adaptSize;
-  final FocusNode focusNode;
-  final TextEditingController controller;
+  final FocusNode? focusNode;
+  final TextEditingController? controller;
 
   SearchTextField({
     this.hintText,
     this.hintStyle,
-    this.onSearch,
+    required this.onSearch,
     this.adaptSize = _defaultCallback,
     this.focusNode,
     this.controller
@@ -89,19 +89,19 @@ class _SearchTextFieldState extends State<SearchTextField> {
     }
   }
 
-  TextEditingController _searchController;
+  TextEditingController? _searchController;
   final _showClearIcon = ValueNotifier(false);
-  Timer _searchTimer;
+  Timer? _searchTimer;
 
   /// 清空搜索内容
   _clear() {
-    _searchController.text = "";
+    _searchController?.text = "";
   }
 
   /// 取消本次搜索，即取消_updateSearch抛出的延时搜索动作
   _cancelSearch() {
-    if (_searchTimer != null && _searchTimer.isActive) {
-      _searchTimer.cancel();
+    if (_searchTimer != null && _searchTimer!.isActive) {
+      _searchTimer!.cancel();
       _searchTimer = null;
     }
   }
@@ -109,7 +109,7 @@ class _SearchTextFieldState extends State<SearchTextField> {
   /// 执行搜索，输入间隔350ms，即抛出一个延时搜索动作
   _updateSearch() {
     _cancelSearch();
-    String txt = _searchController.text.trim();
+    String txt = _searchController!.text.trim();
     _showClearIcon.value = txt.isNotEmpty;
     _searchTimer = Timer(Duration(milliseconds: txt.isEmpty ? 0 : 350), () {
       widget.onSearch(txt);
@@ -119,14 +119,14 @@ class _SearchTextFieldState extends State<SearchTextField> {
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(() {
+    _searchController!.addListener(() {
       _updateSearch();
     });
   }
 
   @override
   void dispose() {
-    _searchController.dispose();
+    _searchController!.dispose();
     super.dispose();
   }
 
@@ -157,7 +157,7 @@ class _SearchTextFieldState extends State<SearchTextField> {
                 ),
               ),
             ),
-            ValueListenableBuilder(
+            ValueListenableBuilder<bool>(
               valueListenable: _showClearIcon,
               builder: (_, isShow, __) => isShow
                   ? GestureDetector(

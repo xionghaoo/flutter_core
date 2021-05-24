@@ -27,30 +27,30 @@ class RoundLineTabIndicator extends Decoration {
   final EdgeInsetsGeometry insets;
 
   @override
-  Decoration lerpFrom(Decoration a, double t) {
+  Decoration? lerpFrom(Decoration? a, double t) {
     if (a is RoundLineTabIndicator) {
       return RoundLineTabIndicator(
         borderSide: BorderSide.lerp(a.borderSide, borderSide, t),
-        insets: EdgeInsetsGeometry.lerp(a.insets, insets, t),
+        insets: EdgeInsetsGeometry.lerp(a.insets, insets, t)!,
       );
     }
     return super.lerpFrom(a, t);
   }
 
   @override
-  Decoration lerpTo(Decoration b, double t) {
+  Decoration? lerpTo(Decoration? b, double t) {
     if (b is RoundLineTabIndicator) {
       return RoundLineTabIndicator(
         borderSide: BorderSide.lerp(borderSide, b.borderSide, t),
-        insets: EdgeInsetsGeometry.lerp(insets, b.insets, t),
+        insets: EdgeInsetsGeometry.lerp(insets, b.insets, t)!,
       );
     }
     return super.lerpTo(b, t);
   }
 
   @override
-  _RoundLinePainter createBoxPainter([ VoidCallback onChanged ]) {
-    return _RoundLinePainter(this, onChanged);
+  _RoundLinePainter createBoxPainter([ VoidCallback? onChanged ]) {
+    return _RoundLinePainter(this, onChanged!);
   }
 }
 
@@ -80,8 +80,8 @@ class _RoundLinePainter extends BoxPainter {
   void paint(Canvas canvas, Offset offset, ImageConfiguration configuration) {
     assert(configuration != null);
     assert(configuration.size != null);
-    final Rect rect = offset & configuration.size;
-    final TextDirection textDirection = configuration.textDirection;
+    final Rect rect = offset & configuration.size!;
+    final TextDirection textDirection = configuration.textDirection!;
     final Rect indicator = _indicatorRectFor(rect, textDirection).deflate(borderSide.width);
 
     final Paint paint = Paint()..color = borderSide.color;
