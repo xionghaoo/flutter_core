@@ -1,247 +1,246 @@
 import 'package:flutter/material.dart';
 
-/// 分页框架
+/// Provider 分页器
 ///
-/// 和Provider配合使用，使用方法：
-/// ```
-/// 1、继承PagingState
-/// class _MyPageState extends PagingState<IncomeSubPage> {
+/// 用法：
+/// 1、继承PagingState，实现pagingModel方法
+/// class _DemoPageState extends PagingState<DemoPage> {
+///
+///   /// a. 实现pagingModel方法，返回PagingModel对象
+///   @override
+///   PagingModel pagingModel() => DemoModel.instance(context);
 ///
 ///   @override
-///   PagingModel pagingModel() => IncomeModel.instance(context);
-///
-///   ...
+///   void initState() {
+///     super.initState();
+///     /// b. 调用PagingState.loadPagingData()方法加载分页数据
+///     loadPagingData();
+///   }
 ///
 ///   @override
 ///   Widget build(BuildContext context) {
-///     return ListView.builder(
-///       padding: EdgeInsets.zero,
-///       // itemCount: , 分页列表itemCount不填，必须为null
-///       itemBuilder: (context, index) => pagingItemWidget(
-///         index: index,
-///         listLength: res.data.length,
-///         itemBuilder: () => _itemWidget()
+///     return Scaffold(
+///       body: Column(
+///         children: [
+///           ...
+///           Expanded(
+///             child: Selector<DemoModel, Resource<List<Item>>>(
+///               selector: (_, model) => model.resource,
+///               shouldRebuild: (before, next) => true,
+///               builder: (_, res, __) {
+///                 return res.data != null
+///                     /// c. 使用PagingState.pagingListView显示分页列表
+///                     ? pagingListView<Item>(
+///                         totalSize: res.data!.length,
+///                         itemBuilder: (index) => _itemWidget(res.data![index]),
+///                     )
+///                     : const Center(child: Text("空状态"));
+///               }
+///             ),
+///           ),
+///         ],
 ///       ),
 ///     );
 ///   }
 /// }
 ///
-/// 2、继承PagingModel
-/// class MyPageModel extends PagingModel<ItemData> {
+/// 2、继承PagingModel，重写对应的方法
+/// class DemoModel extends PagingModel<Item> {
 ///
-///   ...
+///   Resource<List<Item>> resource = Resource.loading();
 ///
-///   @override
-///   afterListData(List<IncomeItem> items) {
-///     // a.第二页以后的页面加载完成时回调
-///     resource.data.addAll(items);
+///   static DemoModel instance(BuildContext context) {
+///     return Provider.of<DemoModel>(context, listen: false);
 ///   }
 ///
 ///   @override
-///   initialListData(List<IncomeItem> items) {
-///     // b.第一页数据加载完成时回调
-///     resource = Resource.success(items);
+///   Future<List<Item>> pagingRequest(int page, Map<String, dynamic>? arguments) async {
+///     /// 模拟异步分页加载
+///     await Future.delayed(const Duration(milliseconds: 200));
+///     print("current page = $currentPage");
+///     if (currentPage >= 10) {
+///       return [];
+///     } else {
+///       return [
+///         Item(name: "item0"),
+///         Item(name: "item1"),
+///         Item(name: "item2"),
+///         Item(name: "item3"),
+///         Item(name: "item4"),
+///       ];
+///     }
 ///   }
 ///
 ///   @override
-///   pagingRequest(int page, Map<String, dynamic> arguments, SuccessListCallback success, FailureCallback failure) {
-///     // c.分页接口请求
-///     // 接口请求参数从arguments对象获取，页数使用page变量，page会自动增加，
-///     String beginDate = arguments['beginDate'];
-///     String endDate = arguments['endDate'];
-///     final subTab = IncomeParentModel.instance(_repo.context).currentSelectedSubTab;
-///     _repo.responseWrapper<IncomeResult>(
-///         future: _repo.storeIncomeList(
-///             beginDate: beginDate,
-///             endDate: endDate,
-///             orderType: subTab == 0 ? AthenaUtil.ORDER_TYPE_OPERATION : AthenaUtil.ORDER_TYPE_STORE,
-///             page: page
-///         ),
-///         success: (r) {
-///           totalData = _TotalData(
-///             promote_amount: r.data.promote_amount,
-///             store_amount: r.data.store_amount,
-///             total_amount: r.data.total_amount
-///           );
-///           // d.接口请求成功，把列表数据传递给paging framework
-///           success(r.data.items);
-///         },
-///         error: () {
-///           resource = Resource.error();
-///           // e.接口请求失败，通知paging framework
-///           failure();
-///         }
-///     );
+///   requestResult(int page, List<Item> items) {
+///     /// 保存每页数据
+///     if (page == 1) {
+///       resource = Resource.success(items);
+///     } else {
+///       resource.data?.addAll(items);
+///     }
 ///   }
 ///
 ///   @override
 ///   resetData() {
-///     // f.加载数据前重置数据状态
+///     /// 初始化分页数据状态
 ///     resource = Resource.loading();
 ///   }
 /// }
-///
-/// 3. 调用分页请求
-///   final model = Provider.of<MyPageModel>(context, listen: false);
-///   // 分页接口请求参数使用currentArguments变量传递
-///   final args = model.currentArguments;
-///   args['beginDate'] = _selectedStartDateValue.value;
-///   args['endDate'] = _selectedEndDateValue.value;
-///   // 发起分页请求
-///   model.loadPagingData(isRefresh: true, arguments: args);
-/// ```
 
-typedef Widget PagingItemWidgetBuilder();
-typedef void SuccessCallback(bool isEmpty);
-typedef void SuccessListCallback<T>(List<T> data);
-typedef void FailureCallback();
+typedef PagingItemWidgetBuilder = Widget Function(int);
 
-/// 分页State，配合PagingModel一起使用
-/// 子类需要调用的两个方法
-/// pagingRefresh
-/// pagingItemWidget
 abstract class PagingState<W extends StatefulWidget> extends State<W> {
-  
-  final Function()? loadData;
-  
-  PagingState({
-    this.loadData  
-  });
-  
-  bool _isLoading = false;
-  bool _isEndOfList = false;
+
+  final _pagingFinished = ValueNotifier<bool?>(false);
+
+  /// 加载更多
+  _fetchMore() {
+    final model = pagingModel();
+    model._loadPagingData(
+      arguments: model.arguments,
+      success: (isEmpty) {
+        _pagingFinished.value = isEmpty;
+      },
+      failure: () {
+        _pagingFinished.value = null;
+      }
+    );
+  }
+
+  /// 分页器初始化加载，从第一页开始
+  loadPagingData({Map<String, dynamic>? arguments}) {
+    _pagingFinished.value = false;
+    final model = pagingModel();
+    model._loadPagingData(
+      isRefresh: true,
+      arguments: arguments,
+      success: (isEmpty) {
+        _pagingFinished.value = isEmpty;
+      },
+      failure: () {
+        /// 为空表示当前页加载失败，结束分页
+        _pagingFinished.value = null;
+      }
+    );
+  }
 
   PagingModel pagingModel();
 
-  /// 刷新时重置底部加载视图
-  void pagingRefresh() {
-    _isEndOfList = false;
-  }
-
-  /// 加载下一页
-  void _fetchMore() {
-    if (!_isLoading) {
-      _isLoading = true;
-      final model = pagingModel();
-      model.loadPagingData(
-        isRefresh: false,
-        /// 使用现有请求参数发起请求
-        arguments: model.currentArguments,
-        success: (isEmpty) {
-          _isLoading = false;
-          setState(() {
-            _isEndOfList = isEmpty;
-          });
-        },
-        failure: () {
-          setState(() {
-            _isEndOfList = true;
-          });
-        }
-      );
-    }
-  }
-
-  /// 构建分页列表子项
-  pagingItemWidget<T>({
-    required int? index,
-    required int? listLength,
-    required PagingItemWidgetBuilder? itemBuilder,
-    /// loading more status
-    Widget? bottomLoadingWidget,
-    /// no more status
-    Widget? bottomCompletedWidget
+  /// 分页列表视图
+  Widget pagingListView<T>({
+    /// 列表总长度
+    required int totalSize,
+    /// 列表子项构建器
+    required PagingItemWidgetBuilder itemBuilder,
+    /// 底部加载更多视图
+    Widget? loadingWidget,
+    /// 底部加载完成视图
+    Widget? completedWidget,
+    /// 底部加载错误视图
+    Widget? errorWidget
   }) {
-    assert(index != null && listLength != null && itemBuilder != null);
-    if (index! < listLength!) {
-      return itemBuilder!();
-    } else if (index == listLength) {
-      if (!_isEndOfList) {
-        _fetchMore();
-      } else {
-        return bottomCompletedWidget ?? defaultCompletedWidget();
-      }
-      return bottomLoadingWidget ?? defaultLoading();
-    }
-  } 
-  
+    return ListView.builder(
+        padding: EdgeInsets.zero,
+        itemCount: totalSize + 1,
+        itemBuilder: (context, index) {
+          if (index < totalSize) {
+            return itemBuilder(index);
+          } else {
+            /// build列表最后一项时加载下一页，如果到底，显示完成
+            return ValueListenableBuilder<bool?>(
+                valueListenable: _pagingFinished,
+                builder: (_, isCompleted, __) {
+                  if (isCompleted == false) {
+                    /// 加载下一页
+                    _fetchMore();
+                  }
+                  return isCompleted == null
+                      /// 加载错误的状态
+                      ? errorWidget ?? defaultErrorWidget()
+                      : isCompleted
+                      /// 加载中的状态
+                      ? loadingWidget ?? defaultCompletedWidget()
+                      /// 加载完成的状态
+                      : completedWidget ?? defaultCompletedWidget();
+                }
+            );
+          }
+        }
+    );
+  }
+
 }
 
-/// 分页Model，配合PagingState一起使用
 abstract class PagingModel<T> extends ChangeNotifier {
-  /// 分页计数
-  int nextPage = 1;
-  /// 缓存请求参数，方便加载下一页时使用
-  Map<String, dynamic>? currentArguments = {};
+  int _page = 1;
+  Map<String, dynamic>? arguments;
 
-  /// 分页数据加载方法
-  /// arguments 可传递实际http请求的参数
-  loadPagingData({bool isRefresh = true, Map<String, dynamic>? arguments, Function(bool)? success, Function? failure}) {
-    currentArguments = arguments;
-    if (isRefresh) {
-      nextPage = 1;
-//      resource = Resource.loading();
+  int get currentPage => _page;
+
+  _loadPagingData({bool? isRefresh, Map<String, dynamic>? arguments, Function(bool)? success, Function? failure}) {
+    if (isRefresh == true) {
+      _page = 1;
       resetData();
     }
-    pagingRequest<T>(nextPage, arguments, (data) {
-      if (isRefresh) {
-//        resource = Resource.success(r.data.items);
-        initialListData(data);
-        nextPage ++;
-      } else {
-//        resource.data.addAll(r.data.items);
-        afterListData(data);
-        if (data.isNotEmpty) {
-          nextPage ++;
-        }
-      }
-      notifyListeners();
+    pagingRequest(_page, arguments).then((data) {
+      requestResult(_page, data);
+      _page ++;
       success?.call(data.isEmpty);
-    }, () {
       notifyListeners();
+    }).catchError((e) {
       failure?.call();
     });
   }
 
+  /// 分页请求
+  /// arguments: 请求参数，用于从PagingState.loadPagingData里面传递参数到实际的请求中
+  /// success: 请求成功的回调，返回当前请求的列表数据，为空时判定为分页结束
+  /// failure：请求失败的回调
+  Future<List<T>> pagingRequest(int page, Map<String, dynamic>? arguments);
+
+  /// 请求结果
+  /// page: 当前页数
+  /// items: 当前页加载成功的结果集
+  requestResult(int page, List<T> items);
+
   /// 初始化分页列表数据
   /// 实现例子：resource = Resource.loading();
   resetData();
-
-  /// 分页请求
-  /// arguments: 请求参数传递工具
-  /// success: 请求成功的回调，把请求成功的列表数据装进来
-  /// failure：请求失败的回调，可用于处理resource的error状态，如: resource = Resource.error(); failure();
-  pagingRequest<T>(int page, Map<String, dynamic>? arguments, SuccessListCallback<T> success, FailureCallback failure);
-
-  /// 第一次加载的列表数据
-  /// 实现例子：resource = Resource.success(r.data.items);
-  initialListData(List<T> items);
-
-  /// 第二页开始加载的列表数据
-  /// 实现例子：resource.data.addAll(r.data.items);
-  afterListData(List<T> items);
 }
 
 Widget defaultCompletedWidget() {
-  return Align(
+  return const Align(
     child: SizedBox(
       height: 40,
       child: Padding(
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.all(8),
         child: Text("我是有底线的 ~", style: TextStyle(fontSize: 13, color: Color(0xFF999999)),),
       ),
     ),
   );
 }
 
-Widget defaultLoading() {
-  return Align(
+Widget defaultLoadingWidget() {
+  return const Align(
     child: SizedBox(
       height: 40,
       width: 40,
       child: Padding(
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.all(8),
         child: CircularProgressIndicator(),
+      ),
+    ),
+  );
+}
+
+Widget defaultErrorWidget() {
+  return const Align(
+    child: SizedBox(
+      height: 40,
+      child: Padding(
+        padding: EdgeInsets.all(8),
+        child: Text("加载失败", style: TextStyle(fontSize: 13, color: Color(0xFF999999)),),
       ),
     ),
   );
