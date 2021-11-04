@@ -92,35 +92,44 @@ typedef PagingItemWidgetBuilder = Widget Function(int);
 
 abstract class PagingState<W extends StatefulWidget> extends State<W> {
 
-  final _pagingFinished = ValueNotifier<bool?>(false);
+  bool? _pagingFinished = false;
 
   /// 加载更多
   _fetchMore() {
     final model = pagingModel();
+    model._page += 1;
     model._loadPagingData(
       arguments: model.arguments,
       success: (isEmpty) {
-        _pagingFinished.value = isEmpty;
+        setState(() {
+          _pagingFinished = isEmpty;
+        });
       },
       failure: () {
-        _pagingFinished.value = null;
+        setState(() {
+          _pagingFinished = null;
+        });
       }
     );
   }
 
   /// 分页器初始化加载，从第一页开始
   loadPagingData({Map<String, dynamic>? arguments}) {
-    _pagingFinished.value = false;
+    _pagingFinished = false;
     final model = pagingModel();
     model._loadPagingData(
       isRefresh: true,
       arguments: arguments,
       success: (isEmpty) {
-        _pagingFinished.value = isEmpty;
+        setState(() {
+          _pagingFinished = isEmpty;
+        });
       },
       failure: () {
         /// 为空表示当前页加载失败，结束分页
-        _pagingFinished.value = null;
+        setState(() {
+          _pagingFinished = null;
+        });
       }
     );
   }
@@ -148,23 +157,19 @@ abstract class PagingState<W extends StatefulWidget> extends State<W> {
             return itemBuilder(index);
           } else {
             /// build列表最后一项时加载下一页，如果到底，显示完成
-            return ValueListenableBuilder<bool?>(
-                valueListenable: _pagingFinished,
-                builder: (_, isCompleted, __) {
-                  if (isCompleted == false) {
-                    /// 加载下一页
-                    _fetchMore();
-                  }
-                  return isCompleted == null
-                      /// 加载错误的状态
-                      ? errorWidget ?? defaultErrorWidget()
-                      : isCompleted
-                      /// 加载中的状态
-                      ? loadingWidget ?? defaultCompletedWidget()
-                      /// 加载完成的状态
-                      : completedWidget ?? defaultCompletedWidget();
-                }
-            );
+            final isCompleted = _pagingFinished;
+            if (isCompleted == false) {
+              /// 加载下一页
+              _fetchMore();
+            }
+            return isCompleted == null
+                /// 加载错误的状态
+                ? errorWidget ?? defaultErrorWidget()
+                : isCompleted
+                /// 加载中的状态
+                ? loadingWidget ?? defaultCompletedWidget()
+                /// 加载完成的状态
+                : completedWidget ?? defaultCompletedWidget();
           }
         }
     );
@@ -185,9 +190,9 @@ abstract class PagingModel<T> extends ChangeNotifier {
     }
     pagingRequest(_page, arguments).then((data) {
       requestResult(_page, data);
-      _page ++;
-      success?.call(data.isEmpty);
+      // _page ++;
       notifyListeners();
+      success?.call(data.isEmpty);
     }).catchError((e) {
       failure?.call();
     });
