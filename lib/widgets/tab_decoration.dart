@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 /// tab 下划线decoration
 class RoundLineTabIndicator extends Decoration {
@@ -56,8 +55,7 @@ class RoundLineTabIndicator extends Decoration {
 
 class _RoundLinePainter extends BoxPainter {
   _RoundLinePainter(this.decoration, VoidCallback onChanged)
-      : assert(decoration != null),
-        super(onChanged);
+      : super(onChanged);
 
   final RoundLineTabIndicator decoration;
 

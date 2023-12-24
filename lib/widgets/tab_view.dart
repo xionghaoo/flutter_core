@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'common.dart';
-import '../screen_adaptation.dart';
-import '../theme/colors.dart';
 
 /// 固定宽度tab切换组件
 // class XTabView extends StatefulWidget {
