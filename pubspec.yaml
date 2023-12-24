@@ -14,7 +14,7 @@ dependencies:
   # 下拉刷新
   pull_to_refresh: ^2.0.0
   # 本地文件夹目录
-  path_provider: ^2.0.1
+  path_provider: ^2.1.1
   # 网络请求
   dio: ^5.4.0
 
