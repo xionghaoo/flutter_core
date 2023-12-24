@@ -1,6 +1,5 @@
 import 'package:core/network/network.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../screen_adaptation.dart';
@@ -113,9 +112,9 @@ Widget defaultErrorWidget() {
   );
 }
 
-showToast(String message) {
-  Fluttertoast.showToast(msg: message, gravity: ToastGravity.CENTER);
-}
+// showToast(String message) {
+//   Fluttertoast.showToast(msg: message, gravity: ToastGravity.CENTER);
+// }
 
 //final emptyWidget = Center(child: Text("暂无数据", style: TextStyle(fontSize: xdp(16), color: Colors.grey[500])));
 

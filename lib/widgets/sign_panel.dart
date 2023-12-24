@@ -6,8 +6,6 @@ import 'package:flutter/rendering.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:ui' as ui show ImageByteFormat, Image;
 
-import 'common.dart';
-
 /// 签名画板
 class SignPanel extends StatefulWidget {
 
@@ -171,7 +169,7 @@ class SignController {
 
   Future<String> saveSign() async {
     if (isEmpty()) {
-      showToast("签名不能为空");
+      // showToast("签名不能为空");
       return Future.value(null);
     }
     return _state!._saveSign();
