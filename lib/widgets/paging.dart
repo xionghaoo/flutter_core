@@ -142,6 +142,8 @@ abstract class PagingState<W extends StatefulWidget> extends State<W> {
     required int totalSize,
     /// 列表子项构建器
     required PagingItemWidgetBuilder itemBuilder,
+    /// 是否反向
+    bool? reverse,
     /// 底部加载更多视图
     Widget? loadingWidget,
     /// 底部加载完成视图
@@ -152,6 +154,7 @@ abstract class PagingState<W extends StatefulWidget> extends State<W> {
     return ListView.builder(
         padding: EdgeInsets.zero,
         itemCount: totalSize + 1,
+        reverse: reverse ?? false,
         itemBuilder: (context, index) {
           if (index < totalSize) {
             return itemBuilder(index);
