@@ -191,6 +191,7 @@ abstract class PagingModel<T> extends ChangeNotifier {
       _page = 1;
       resetData();
     }
+    this.arguments = arguments;
     pagingRequest(_page, arguments).then((data) {
       requestResult(_page, data);
       // _page ++;
