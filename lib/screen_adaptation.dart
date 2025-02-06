@@ -23,11 +23,9 @@ double xdp(double size) {
 }
 
 extension DpInt on int {
-  double dp() {
-    if (scale == null || screenWidth == null) {
-      throw Exception("请先初始化屏幕缩放因子和实际屏幕宽度");
-    }
-    return this * screenWidth! / uiScreenWidth;
-  }
+  double get dp => xdp(this as double);
 }
 
+extension DpDouble on double {
+  double get dp => xdp(this);
+}
