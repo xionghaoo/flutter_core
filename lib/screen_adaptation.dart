@@ -23,7 +23,7 @@ double xdp(double size) {
 }
 
 extension DpInt on int {
-  double get dp => xdp(this as double);
+  double get dp => xdp(this.toDouble());
 }
 
 extension DpDouble on double {
