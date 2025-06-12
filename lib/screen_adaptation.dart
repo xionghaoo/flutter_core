@@ -15,11 +15,12 @@ final double uiScreenWidth = 375.0;
 final double uiScale = 2.0;
 
 /// 适配尺寸计算
-double xdp(double size) {
-  if (scale == null || screenWidth == null) {
-    throw Exception("请先初始化屏幕缩放因子和实际屏幕宽度");
+double xdp(double? size) {
+  final width = screenWidth ?? 0.0;
+  if (width <= 0 || size == null) {
+    return size ?? 0;
   }
-  return size * screenWidth! / uiScreenWidth;
+  return size * width / uiScreenWidth;
 }
 
 extension DpInt on int {
